@@ -40,6 +40,24 @@ function activate(context) {
     console.log('Congratulations, your extension "codespace-assistant" is now active!');
     // Register the TreeDataProvider for the sidebar
     vscode.window.registerTreeDataProvider('codespaceAssistantView', new CodespaceAssistantDataProvider(context));
+    let selectFileDisposable = vscode.commands.registerCommand('codespaceAssistantView.selectFile', async () => {
+        // Get all files in the current working directory
+        const files = await vscode.workspace.findFiles('**/*');
+        // Create QuickPickItems from the file paths
+        const items = files.map((file) => ({
+            label: vscode.workspace.asRelativePath(file),
+            description: file.fsPath
+        }));
+        // Show the QuickPick (dropdown)
+        const selectedFile = await vscode.window.showQuickPick(items, {
+            placeHolder: 'Select a file',
+        });
+        if (selectedFile) {
+            // Store the selected file path in extension context
+            context.workspaceState.update('selectedFile', selectedFile.description);
+            vscode.commands.executeCommand('codespaceAssistantView.refresh');
+        }
+    });
     let createFileDisposable = vscode.commands.registerCommand('codespace-assistant.createFile', async () => {
         const fileName = await vscode.window.showInputBox({
             prompt: 'Enter the new file name'
@@ -102,7 +120,7 @@ function activate(context) {
     });
     let terminateTerminalDisposable = vscode.commands.registerCommand('codespace-assistant.terminateTerminal', async () => {
         try {
-            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\\\\x03' });
+            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\\x03' });
             vscode.window.showInformationMessage('Sent Ctrl+C to the active terminal.');
         }
         catch (error) {
@@ -112,14 +130,14 @@ function activate(context) {
     let pasteAndRunDisposable = vscode.commands.registerCommand('codespace-assistant.pasteAndRun', async () => {
         try {
             const clipboardContent = await vscode.env.clipboard.readText();
-            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: clipboardContent + '\\\\r' });
+            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: clipboardContent + '\\r' });
             vscode.window.showInformationMessage('Pasted and ran command in active terminal.');
         }
         catch (error) {
             vscode.window.showErrorMessage(`Failed to paste and run in terminal: ${error.message}`);
         }
     });
-    context.subscriptions.push(createFileDisposable, copyFileDisposable, pasteToFileDisposable, copyTerminalDisposable, terminateTerminalDisposable, pasteAndRunDisposable);
+    context.subscriptions.push(createFileDisposable, copyFileDisposable, pasteToFileDisposable, copyTerminalDisposable, terminateTerminalDisposable, pasteAndRunDisposable, selectFileDisposable);
 }
 function deactivate() { }
 // Basic TreeDataProvider for the sidebar
@@ -138,30 +156,7 @@ class CodespaceAssistantDataProvider {
     async getChildren(element) {
         if (element) {
             if (element.id === 'selectFileItem') {
-                return new Promise(resolve => {
-                    vscode.commands.registerCommand('codespaceAssistantView.selectFile', async () => {
-                        // Get all files in the current working directory
-                        const files = await vscode.workspace.findFiles('**/*');
-                        // Create QuickPickItems from the file paths
-                        const items = files.map((file) => ({
-                            label: vscode.workspace.asRelativePath(file),
-                            description: file.fsPath
-                        }));
-                        // Show the QuickPick (dropdown)
-                        const selectedFile = await vscode.window.showQuickPick(items, {
-                            placeHolder: 'Select a file',
-                        });
-                        if (selectedFile) {
-                            // Store the selected file path in extension context
-                            this.context.workspaceState.update('selectedFile', selectedFile.description);
-                            const selectFileItem = new vscode.TreeItem(`Selected File: ${selectedFile.label}`, vscode.TreeItemCollapsibleState.None);
-                            selectFileItem.id = 'selectFileItem';
-                            selectFileItem.contextValue = 'file';
-                            this.refresh();
-                        }
-                        resolve([]);
-                    });
-                });
+                return [];
             }
             return [];
         }
@@ -189,13 +184,22 @@ class CodespaceAssistantDataProvider {
                 command: 'codespace-assistant.pasteToFile',
                 title: 'Paste to Selected File'
             };
-            const selectedFilePath = this.context.workspaceState.get('selectedFile');
-            if (selectedFilePath && typeof selectedFilePath === 'string') {
-                const selectFileItem = new vscode.TreeItem(`Selected File: ${vscode.workspace.asRelativePath(vscode.Uri.file(selectedFilePath))}`, vscode.TreeItemCollapsibleState.None);
-                selectFileItem.id = 'selectFileItem';
-                return Promise.resolve([welcomeItem, selectFileItem, createFileItem, copyFileItem, pasteFileItem]);
-            }
-            return Promise.resolve([welcomeItem, selectFileItem, createFileItem, copyFileItem, pasteFileItem]);
+            const copyTerminalItem = new vscode.TreeItem('Copy Terminal Content', vscode.TreeItemCollapsibleState.None);
+            copyTerminalItem.command = {
+                command: 'codespace-assistant.copyTerminal',
+                title: 'Copy Terminal Content'
+            };
+            const terminateTerminalItem = new vscode.TreeItem('Terminate Terminal', vscode.TreeItemCollapsibleState.None);
+            terminateTerminalItem.command = {
+                command: 'codespace-assistant.terminateTerminal',
+                title: 'Terminate Terminal'
+            };
+            const pasteAndRunItem = new vscode.TreeItem('Paste and Run', vscode.TreeItemCollapsibleState.None);
+            pasteAndRunItem.command = {
+                command: 'codespace-assistant.pasteAndRun',
+                title: 'Paste and Run'
+            };
+            return [welcomeItem, selectFileItem, createFileItem, copyFileItem, pasteFileItem, copyTerminalItem, terminateTerminalItem, pasteAndRunItem];
         }
     }
 }

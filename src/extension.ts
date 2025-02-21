@@ -101,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     let terminateTerminalDisposable = vscode.commands.registerCommand('codespace-assistant.terminateTerminal', async () => {
         try {
-            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\\\\x03' });
+            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: '\\x03' });
             vscode.window.showInformationMessage('Sent Ctrl+C to the active terminal.');
         } catch (error: any) {
             vscode.window.showErrorMessage(`Failed to terminate terminal: ${error.message}`);
@@ -111,7 +111,7 @@ export function activate(context: vscode.ExtensionContext) {
     let pasteAndRunDisposable = vscode.commands.registerCommand('codespace-assistant.pasteAndRun', async () => {
         try {
             const clipboardContent = await vscode.env.clipboard.readText();
-            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: clipboardContent + '\\\\r' });
+            await vscode.commands.executeCommand('workbench.action.terminal.sendSequence', { text: clipboardContent + '\\r' });
             vscode.window.showInformationMessage('Pasted and ran command in active terminal.');
 
         } catch (error: any) {
@@ -173,7 +173,24 @@ class CodespaceAssistantDataProvider implements vscode.TreeDataProvider<vscode.T
                 command: 'codespace-assistant.pasteToFile',
                 title: 'Paste to Selected File'
             };
-            const selectedFilePath = this.context.workspaceState.get('selectedFile');
-            if (selectedFilePath && typeof selectedFilePath === 'string') {
-                 const selectFileItem = new vscode.TreeItem(`Se
-``
+
+            const copyTerminalItem = new vscode.TreeItem('Copy Terminal Content', vscode.TreeItemCollapsibleState.None);
+            copyTerminalItem.command = {
+                command: 'codespace-assistant.copyTerminal',
+                title: 'Copy Terminal Content'
+            }
+
+            const terminateTerminalItem = new vscode.TreeItem('Terminate Terminal', vscode.TreeItemCollapsibleState.None);
+            terminateTerminalItem.command = {
+                command: 'codespace-assistant.terminateTerminal',
+                title: 'Terminate Terminal'
+            }
+            const pasteAndRunItem = new vscode.TreeItem('Paste and Run', vscode.TreeItemCollapsibleState.None);
+            pasteAndRunItem.command = {
+                command: 'codespace-assistant.pasteAndRun',
+                title: 'Paste and Run'
+            }
+            return [welcomeItem, selectFileItem, createFileItem, copyFileItem, pasteFileItem, copyTerminalItem, terminateTerminalItem, pasteAndRunItem];
+        }
+    }
+}
