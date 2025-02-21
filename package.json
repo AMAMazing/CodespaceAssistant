@@ -34,9 +34,30 @@
     },
     "commands": [
       {
-        "command": "codespace-assistant.selectFile",
-        "title": "Select File"
-      }
+        "command": "codespace-assistant.createFile",
+        "title": "Create New File"
+      },
+      {
+        "command": "codespace-assistant.copyFile",
+        "title": "Copy Selected File"
+      },
+      {
+        "command": "codespace-assistant.pasteToFile",
+        "title": "Paste to Selected File"
+    },
+    {
+        "command": "codespace-assistant.copyTerminal",
+        "title": "Copy Terminal"
+    },
+    {
+        "command": "codespace-assistant.terminateTerminal",
+        "title": "Terminate Terminal"
+    },
+    {
+        "command": "codespace-assistant.pasteAndRun",
+        "title": "Paste and Run"
+    }
+
     ]
   },
   "scripts": {
@@ -50,15 +71,15 @@
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "@types/vscode": "^1.85.0",
+    "@types/vscode": "^1.97.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
     "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-     "@vscode/test-cli": "^0.0.4",
-    "@vscode/test-electron": "^2.3.8"
+    "webpack-cli": "^5.1.4"
   }
 }
