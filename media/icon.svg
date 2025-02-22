@@ -1,3 +1,14 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM17 13H7V11H17V13Z" fill="currentColor"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+    width="24" height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <!-- Terminal Icon -->
+    <polyline points="5,12 10,7 5,2" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="12" y1="12" x2="18" y2="12" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Assistant Bubble -->
+    <circle cx="18" cy="5" r="3" fill="#007ACC" stroke="#FFFFFF" stroke-width="1.5"/>
 </svg>
