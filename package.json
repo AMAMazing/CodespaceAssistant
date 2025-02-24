@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:codespaceAssistantView"
+    ""
   ],
   "main": "./out/extension.js",
   "contributes": {
