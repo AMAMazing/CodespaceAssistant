@@ -4,9 +4,13 @@
   "description": "A VSCode extension to let you code easier with GitHub codespaces",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.97.0"
   },
-  "publisher": "AMA Mazing",
+  "publisher": "AMAMazing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AMAMazing/CodespaceAssistant"
+  },
   "categories": [
     "Other"
   ],

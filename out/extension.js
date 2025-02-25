@@ -67,6 +67,8 @@ function activate(context) {
             try {
                 await vscode.workspace.fs.writeFile(newFilePath, new Uint8Array());
                 vscode.window.showInformationMessage(`File created: ${fileName}`);
+                // Select the newly created file
+                context.workspaceState.update('selectedFile', newFilePath.fsPath);
                 // Refresh the tree view
                 vscode.commands.executeCommand('codespaceAssistantView.refresh');
             }
